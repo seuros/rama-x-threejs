@@ -1,0 +1,9 @@
+[tools]
+rust = { version = "1.99", components = "clippy,rustfmt" }
+# Rebuilds the vendored three.js (vendor/build.js) and runs the hook's tests.
+bun = "1.4.3"
+
+[tasks.vendor]
+description = "Rebuild assets/three/ from the pinned three npm package"
+dir = "vendor"
+run = ["bun install --frozen-lockfile", "bun run build"]

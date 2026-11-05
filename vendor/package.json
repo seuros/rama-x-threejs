@@ -1,0 +1,12 @@
+{
+  "name": "rama-x-threejs-vendor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build.js",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  }
+}

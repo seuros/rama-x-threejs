@@ -1,0 +1,37 @@
+# rama × three.js: serve a pinned three.js to the browser and drive it with Datastar.
+
+[package]
+name = "rama-x-threejs"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+authors = ["Abdelkader <terminale@gmail.com>"]
+description = "Serve a pinned three.js with hashed, immutable URLs and an import map from rama, and drive a page's own scene code with Datastar signal patches"
+license = "MIT"
+repository = "https://github.com/seuros/rama-x-threejs"
+readme = "README.md"
+keywords = ["threejs", "rama", "datastar", "webgl", "sse"]
+categories = ["web-programming::http-server", "visualization"]
+# vendor/ only rebuilds assets/three/; the crate embeds the result.
+exclude = ["/vendor/", "/.github/"]
+
+[lints.rust]
+rust_2024_compatibility = { level = "warn", priority = -1 }
+unsafe_code = "deny"
+unused_must_use = "warn"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[lib]
+name = "rama_x_threejs"
+
+[dependencies]
+rama = { version = "0.4.0", default-features = false, features = ["http", "html"] }
+serde = { version = "1.0" }
+serde_json = { version = "1.0" }
+
+[dev-dependencies]
+rama = { version = "0.4.0", features = ["http-full"] }
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.42", features = ["full"] }

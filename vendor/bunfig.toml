@@ -1,0 +1,3 @@
+# The public registry, so a rebuild matches CI whatever ~/.npmrc says.
+[install]
+registry = "https://registry.npmjs.org/"

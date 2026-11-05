@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push: { branches: [master] }
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  # Any warning fails the step, from build, clippy, test or doc alike.
+  CARGO_BUILD_WARNINGS: deny
+  RUSTDOCFLAGS: -D warnings
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # mise owns the toolchain versions, from mise.toml, as it does locally.
+      - uses: jdx/mise-action@v4
+      # First: it needs no compile, so a formatting slip fails in seconds.
+      - run: cargo fmt --all --check
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo clippy --all-targets --all-features -- -D warnings
+      - run: cargo test --all-targets --all-features
+      - run: cargo test --doc --all-features
+      - run: cargo doc --no-deps --all-features
+      # The crate must package on its own, vendored assets included.
+      - run: cargo package --allow-dirty --no-verify
+
+  # assets/three/ must be exactly what vendor/build.js makes from the pinned
+  # npm package, and the Datastar hook must pass its own tests.
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v4
+      - name: Rebuild the vendored three.js
+        working-directory: vendor
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+      - name: The committed files match the rebuild
+        run: |
+          git status --porcelain assets/three
+          git diff --exit-code assets/three
+          test -z "$(git status --porcelain assets/three)"
+      - name: Hook tests
+        working-directory: vendor
+        run: bun test
